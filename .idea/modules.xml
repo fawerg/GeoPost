@@ -3,7 +3,9 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/GeoPost.iml" filepath="$PROJECT_DIR$/GeoPost.iml" />
+      <module fileurl="file://C:\Users\franc\Documents\GeoPost\GeoPost.iml" filepath="C:\Users\franc\Documents\GeoPost\GeoPost.iml" />
       <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://C:\Users\franc\Documents\GeoPost\app\app.iml" filepath="C:\Users\franc\Documents\GeoPost\app\app.iml" />
     </modules>
   </component>
 </project>

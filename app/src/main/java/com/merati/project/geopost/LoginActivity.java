@@ -7,7 +7,8 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 public class LoginActivity extends AppCompatActivity {
-
+    public static boolean logged = false;
+    protected String sessionId = null;
     protected EditText username_field;
     protected EditText password_field;
     Model myModel;
@@ -24,7 +25,9 @@ public class LoginActivity extends AppCompatActivity {
         String username, password;
         username = username_field.getText().toString();
         password = password_field.getText().toString();
-        String sessionId = myModel.loginRequest("username="+username+"&password="+password);
-        ((EditText)findViewById(R.id.sessionId)).setText(sessionId);
+        sessionId = myModel.loginRequest("username="+username+"&password="+password);
+        if (sessionId!= null){
+            logged= true;
+        }
     }
 }

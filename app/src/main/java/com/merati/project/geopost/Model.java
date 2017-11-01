@@ -4,6 +4,8 @@ import android.app.Activity;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -21,18 +23,31 @@ import java.net.URL;
 
 public class Model {
     LoginActivity myLogin;
+    String sessionId;
+    boolean connectionError;
     public Model(LoginActivity myLogin){
         this.myLogin = myLogin;
     }
 
     protected String loginRequest(String credentials){
-        String sessionId = null;
+
         String url = "https://ewserver.di.unimi.it/mobicomp/geopost/login";
 
         RequestQueue queue = Volley.newRequestQueue(myLogin);
-        StringRequest stringRequest = new StringRequest();
-
-
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        sessionId=response;
+                    }},
+                new Response.ErrorListener(){
+                    @Override
+                    public void onErrorResponse(VolleyError error){
+                        connectionError=true;
+                        sessionId= null;
+                    }
+                });
+        queue.add(stringRequest);
         return sessionId;
     }
 }
