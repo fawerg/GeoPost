@@ -25,6 +25,7 @@ public class Model {
     LoginActivity myLogin;
     String sessionId;
     boolean connectionError;
+
     public Model(LoginActivity myLogin){
         this.myLogin = myLogin;
     }
