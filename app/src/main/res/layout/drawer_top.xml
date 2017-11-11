@@ -7,7 +7,7 @@
 
     <ImageView
         android:layout_width="match_parent"
-        android:layout_height="10dp"
+        android:layout_height="50dp"
         android:id="@+id/imageView"
         android:layout_gravity="center_horizontal"
         android:src="@drawable/googleg_standard_color_18"/>
@@ -17,7 +17,6 @@
         android:layout_height="wrap_content"
         android:text="La mia APP"
         android:textSize="14sp"
-        android:textColor="#FFF"
         android:textStyle="bold"
         android:gravity="center_horizontal"
         android:paddingBottom="4dp"
