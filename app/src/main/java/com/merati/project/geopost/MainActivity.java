@@ -92,12 +92,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 currentFragment = new FragmentProfile();
                 break;
             case R.id.add_friend:
+                currentFragment = new FragmentAddFriend();
                 break;
             case R.id.followed:
                 currentFragment = new FragmentFollowed();
                 break;
-
             case R.id.status_update:
+                currentFragment = new FragmentStatusUpdate();
                 break;
         }
         mDrawerLayout = findViewById(R.id.drawer_layout);
