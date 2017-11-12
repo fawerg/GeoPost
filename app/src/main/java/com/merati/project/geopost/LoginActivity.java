@@ -17,6 +17,7 @@ import com.android.volley.toolbox.Volley;
 
 public class LoginActivity extends AppCompatActivity {
     public static boolean logged = false;
+
     protected String sessionId = null;
     protected EditText username_field;
     protected EditText password_field;
@@ -64,7 +65,7 @@ public class LoginActivity extends AppCompatActivity {
         if (sessionId!= null){
             logged= true;
             Intent intent = new Intent(this, ActivityFollowed.class);
-            intent.putExtra("session_id", sessionId);
+            intent.putExtra("session", sessionId);
             startActivity(intent);
         }
     }

@@ -4,21 +4,33 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/profile"
+            android:checkable="false"
             android:checked="false"
-            android:title="Profile"/>
+            android:enabled="true"
+            android:title="Profile"
+            android:visible="true" />
 
         <item
             android:id="@+id/followed"
+            android:checkable="false"
             android:checked="false"
-            android:title="Followed" />
+            android:enabled="true"
+            android:title="Followed"
+            android:visible="true" />
 
         <item
             android:id="@+id/add_friend"
+            android:checkable="false"
             android:checked="false"
-            android:title="Add Friend" />
+            android:enabled="true"
+            android:title="Add Friend"
+            android:visible="true" />
         <item
             android:id="@+id/status_update"
+            android:checkable="false"
             android:checked="false"
-            android:title="Update Status"/>
+            android:enabled="true"
+            android:title="Update Status"
+            android:visible="true" />
     </group>
 </menu>
