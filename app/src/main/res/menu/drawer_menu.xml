@@ -6,6 +6,7 @@
             android:id="@+id/profile"
             android:checkable="false"
             android:checked="false"
+            android:icon="@drawable/ic_person_black_24px"
             android:enabled="true"
             android:title="Profile"
             android:visible="true" />
@@ -16,7 +17,8 @@
             android:checked="false"
             android:enabled="true"
             android:title="Followed"
-            android:visible="true" />
+            android:visible="true"
+            android:icon="@drawable/ic_people_black_24px"/>
 
         <item
             android:id="@+id/add_friend"
@@ -24,13 +26,15 @@
             android:checked="false"
             android:enabled="true"
             android:title="Add Friend"
-            android:visible="true" />
+            android:visible="true"
+            android:icon="@drawable/ic_person_add_black_24px"/>
         <item
             android:id="@+id/status_update"
             android:checkable="false"
             android:checked="false"
             android:enabled="true"
             android:title="Update Status"
-            android:visible="true" />
+            android:visible="true"
+            android:icon="@drawable/ic_share_black_24px"/>
     </group>
 </menu>
