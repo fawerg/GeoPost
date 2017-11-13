@@ -12,17 +12,9 @@
     <android.support.design.widget.NavigationView
         android:id="@+id/navigation"
         android:layout_width="wrap_content"
-<<<<<<< HEAD
+
         android:layout_height="match_parent"
         android:layout_gravity="start"
         app:menu="@menu/my_menu_items" />
 </android.support.v4.widget.DrawerLayout>
-=======
-        android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/username"
-        android:layout_marginTop="16dp"
-        android:text="Last message posted:" />
 
-</android.widget.RelativeLayout>
->>>>>>> parent of 3a48d6e... added map fragment for profile activity

@@ -1,10 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="my_pages"/>
-    <item name="profile">Profile</item>
-        <item name="status_update">Status Update</item>
-    <item name="followed_friends">Followed Friends</item>>
-    <item name="add_friends">Add Friend</item>>
+   
     
     
 </resources>

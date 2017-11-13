@@ -8,10 +8,8 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-<<<<<<< HEAD:app/src/main/res/layout/fragment_map.xml
-        android:text="@string/hello_blank_fragment" />
-=======
+
         android:text="fragment add friend" />
->>>>>>> ab9896c1d8d67d2eb5661dfb29c23db539866f9f:app/src/main/res/layout/fragment_add_friend.xml
+
 
 </FrameLayout>
