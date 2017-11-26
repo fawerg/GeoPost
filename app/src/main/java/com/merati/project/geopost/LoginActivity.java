@@ -5,6 +5,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -33,10 +34,10 @@ public class LoginActivity extends AppCompatActivity {
         String username, password;
         username = username_field.getText().toString();
         password = password_field.getText().toString();
-        sessionId = loginRequest("username="+username+"&password="+password);
+        loginRequest("username="+username+"&password="+password);
     }
 
-    protected String loginRequest(String credentials){
+    protected void loginRequest(String credentials){
 
         String url = "https://ewserver.di.unimi.it/mobicomp/geopost/login";
 
@@ -56,15 +57,14 @@ public class LoginActivity extends AppCompatActivity {
                     }
                 });
         queue.add(stringRequest);
-        return sessionId;
     }
 
     public void startBrowsing(){
-        if (sessionId!= null){
+        //if (sessionId!= null){
             logged= true;
             Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra("session", sessionId);
             startActivity(intent);
-        }
+        //}
     }
 }
