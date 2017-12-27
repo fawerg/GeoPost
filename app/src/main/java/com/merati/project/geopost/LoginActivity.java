@@ -14,10 +14,13 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class LoginActivity extends AppCompatActivity {
     public static boolean logged = false;
 
-    protected String sessionId = null;
+    public static String sessionId = null;
     protected EditText username_field;
     protected EditText password_field;
     boolean connectionError;
@@ -38,7 +41,9 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     protected void loginRequest(String credentials){
-
+        final String username, password;
+        username = username_field.getText().toString();
+        password = password_field.getText().toString();
         String url = "https://ewserver.di.unimi.it/mobicomp/geopost/login";
 
         RequestQueue queue = Volley.newRequestQueue(this);
@@ -55,7 +60,16 @@ public class LoginActivity extends AppCompatActivity {
                         connectionError=true;
                         sessionId= null;
                     }
-                });
+                }) {
+            @Override
+            protected Map<String, String> getParams()
+            {
+                Map<String, String>  params = new HashMap<String, String>();
+                params.put("username", username);
+                params.put("password", password);
+
+                return params;
+            }};
         queue.add(stringRequest);
     }
 

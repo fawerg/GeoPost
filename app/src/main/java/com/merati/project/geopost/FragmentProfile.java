@@ -7,6 +7,18 @@ import android.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.EditText;
+import android.widget.TextView;
+
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -18,7 +30,7 @@ import android.view.ViewGroup;
  * create an instance of this fragment.
  */
 public class FragmentProfile extends Fragment {
-
+    public static String session ;
 
     private OnFragmentInteractionListener mListener;
 
@@ -26,7 +38,8 @@ public class FragmentProfile extends Fragment {
 
     public static FragmentProfile newInstance(String param1, String param2) {
         FragmentProfile fragment = new FragmentProfile();
-        Bundle args = new Bundle();
+        Bundle args = fragment.getArguments();
+        session = args.getString("session");
         fragment.setArguments(args);
         return fragment;
     }
@@ -34,11 +47,13 @@ public class FragmentProfile extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
+
         return inflater.inflate(R.layout.fragment_profile, container, false);
     }
 

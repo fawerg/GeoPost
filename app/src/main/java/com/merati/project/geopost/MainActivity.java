@@ -18,10 +18,23 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.JsonRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONObject;
+
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, FragmentProfile.OnFragmentInteractionListener{
-    protected String session_id;
+    public static String session_id;
     Fragment currentFragment;
     ActionBarDrawerToggle mDrawerToggle;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,10 +91,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return super.onOptionsItemSelected(item);
     }
     @Override
+
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         mDrawerToggle.syncState();
     }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem item) {
         FragmentManager fm = getFragmentManager();
@@ -89,8 +104,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         DrawerLayout mDrawerLayout;
         switch (item.getItemId()){
             case R.id.profile:
-
+                Bundle bundle = new Bundle();
+                bundle.putString("session", session_id);
                 currentFragment = new FragmentProfile();
+                currentFragment.setArguments(bundle);
+                show_name();
                 break;
             case R.id.add_friend:
                 currentFragment = new FragmentAddFriend();
@@ -115,8 +133,53 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-    public void onLogout(View view){
+    public void logout(){
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
 
+    public void onLogout(View view){
+        String url = "https://ewserver.di.unimi.it/mobicomp/geopost/logout?session_id="+session_id;
+        RequestQueue queue = Volley.newRequestQueue(this);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        logout();
+                    }},
+                new Response.ErrorListener(){
+                    @Override
+                    public void onErrorResponse(VolleyError error){
+
+                    }
+                });
+        queue.add(stringRequest);
+    }
+
+    public void show_name(){
+
+        String url = "https://ewserver.di.unimi.it/mobicomp/geopost/profile?session_id="+session_id;
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    ((TextView) findViewById(R.id.profile_name)).setText(response.getString("username"));
+                    ((TextView)findViewById(R.id.profile_status)).setText(""+response.getString("msg"));
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        queue.add(jsonRequest);
     }
 }
 
