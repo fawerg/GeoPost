@@ -1,10 +1,6 @@
 package com.merati.project.geopost;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,21 +11,18 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
 
-import com.android.volley.NetworkResponse;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
@@ -37,18 +30,18 @@ import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONObject;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    public static String session_id;
+import static com.merati.project.geopost.MainActivity.session_id;
 
+public class Profile extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback{
     ActionBarDrawerToggle mDrawerToggle;
-    LatLng last_location=null;
-
+    SupportMapFragment mapFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Intent intent = getIntent();
-        session_id = intent.getStringExtra("session");
+        setContentView(R.layout.activity_profile);
+
+        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
 
         DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
@@ -67,18 +60,72 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 invalidateOptionsMenu();
             }
         };
+
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
-
         setNavigationViewListner();
+        getProfileInfo();
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+    }
     private void setNavigationViewListner() {
         NavigationView navigationView = (NavigationView)findViewById(R.id.menulaterale);
         navigationView.setNavigationItemSelectedListener(this);
     }
+
+    public void onLogout(View view){
+        String url = "https://ewserver.di.unimi.it/mobicomp/geopost/logout?session_id="+session_id;
+        RequestQueue queue = Volley.newRequestQueue(this);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        logout();
+                    }},
+                new Response.ErrorListener(){
+                    @Override
+                    public void onErrorResponse(VolleyError error){
+
+                    }
+                });
+        queue.add(stringRequest);
+    }
+
+    public void logout(){
+        Intent intent = new Intent(this, LoginActivity.class);
+        startActivity(intent);
+    }
+
+    protected void getProfileInfo(){
+        Log.d("session_id", session_id);
+        String url = "https://ewserver.di.unimi.it/mobicomp/geopost/profile?session_id="+session_id;
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    ((TextView) findViewById(R.id.username)).setText(response.getString("username"));
+                    ((TextView) findViewById(R.id.status)).setText(""+response.getString("msg"));
+
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        queue.add(jsonRequest);
+    }
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Pass the event to ActionBarDrawerToggle
@@ -92,8 +139,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         return super.onOptionsItemSelected(item);
     }
-    @Override
 
+    @Override
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         mDrawerToggle.syncState();
@@ -123,5 +170,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         return false;
     }
-}
 
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        LatLng sydney = new LatLng(-33.852, 151.211);
+        googleMap.addMarker(new MarkerOptions().position(sydney)
+                .title("Marker in Sydney"));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+    }
+}
