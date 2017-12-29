@@ -34,13 +34,6 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     protected void onClickLogin(View view){
-        String username, password;
-        username = username_field.getText().toString();
-        password = password_field.getText().toString();
-        loginRequest("username="+username+"&password="+password);
-    }
-
-    protected void loginRequest(String credentials){
         final String username, password;
         username = username_field.getText().toString();
         password = password_field.getText().toString();
@@ -74,11 +67,11 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     public void startBrowsing(){
-        //if (sessionId!= null){
+        if (sessionId!= null){
             logged= true;
             Intent intent = new Intent(this, MainActivity.class);
             intent.putExtra("session", sessionId);
             startActivity(intent);
-        //}
+        }
     }
 }

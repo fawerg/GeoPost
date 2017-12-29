@@ -27,13 +27,21 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.JsonRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapView;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONObject;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, FragmentProfile.OnFragmentInteractionListener{
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, FragmentProfile.OnFragmentInteractionListener, OnMapReadyCallback{
     public static String session_id;
     Fragment currentFragment;
     ActionBarDrawerToggle mDrawerToggle;
+    LatLng last_location=null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -72,7 +80,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         setNavigationViewListner();
     }
 
-
     private void setNavigationViewListner() {
         NavigationView navigationView = (NavigationView)findViewById(R.id.menulaterale);
         navigationView.setNavigationItemSelectedListener(this);
@@ -107,6 +114,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Bundle bundle = new Bundle();
                 bundle.putString("session", session_id);
                 currentFragment = new FragmentProfile();
+
+                SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+                mapFragment.getMapAsync(this);
                 currentFragment.setArguments(bundle);
                 show_name();
                 break;
@@ -157,7 +167,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     public void show_name(){
-
+        Log.d("session_id", session_id);
         String url = "https://ewserver.di.unimi.it/mobicomp/geopost/profile?session_id="+session_id;
 
         RequestQueue queue = Volley.newRequestQueue(this);
@@ -166,7 +176,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             public void onResponse(JSONObject response) {
                 try {
                     ((TextView) findViewById(R.id.profile_name)).setText(response.getString("username"));
-                    ((TextView)findViewById(R.id.profile_status)).setText(""+response.getString("msg"));
+                    ((TextView) findViewById(R.id.profile_status)).setText(""+response.getString("msg"));
+                    setLastLocation(new LatLng(response.getDouble("lat"), response.getDouble("lon")));
                 }
                 catch (Exception e){
                     e.printStackTrace();
@@ -180,6 +191,17 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             }
         });
         queue.add(jsonRequest);
+    }
+
+    public void setLastLocation(LatLng location){
+        last_location=location;
+    }
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        Log.d("Main Activity", "Map is ready");
+        LatLng test = last_location;
+        googleMap.addMarker(new MarkerOptions().position(test).title("sidney"));
+        googleMap.moveCamera(CameraUpdateFactory.newLatLng(test));
     }
 }
 
