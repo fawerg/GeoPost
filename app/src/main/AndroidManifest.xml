@@ -18,18 +18,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity" />
+        <activity android:name=".FollowedFriends" />
         <activity android:name=".Profile" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDD1K1EyESop0XHU1QJGXvDOvkpQdhAfKY" />
 
-        <activity android:name=".Friends" />
+        <activity android:name=".Friend" />
         <activity
             android:name=".AddFriend"
             android:label="@string/title_activity_add_friend"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".UpdateStatus"></activity>
     </application>
 
 </manifest>

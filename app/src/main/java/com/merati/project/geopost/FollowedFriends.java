@@ -1,10 +1,6 @@
 package com.merati.project.geopost;
 
-import android.app.Fragment;
-import android.app.FragmentManager;
-import android.app.FragmentTransaction;
 import android.content.Intent;
-import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,39 +11,17 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
-import android.widget.TextView;
+import android.widget.ListView;
 
-import com.android.volley.NetworkResponse;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.JsonRequest;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.google.android.gms.maps.CameraUpdateFactory;
-import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.OnMapReadyCallback;
-import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.android.gms.maps.model.MarkerOptions;
-
-import org.json.JSONObject;
-
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class FollowedFriends extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     Model myModel = Model.getInstance();
-
     ActionBarDrawerToggle mDrawerToggle;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-        Intent intent = getIntent();
+        setContentView(R.layout.activity_followed_friends);
 
         DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
@@ -66,11 +40,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 invalidateOptionsMenu();
             }
         };
+
+        myModel.fetchFriends();
+        ListView friends_list = findViewById(R.id.friends_list);
+        FriendsAdapter myAdapter = new FriendsAdapter(this, android.R.layout.list_content, myModel.getFriends());
+        friends_list.setAdapter(myAdapter);
+
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-
-
-
         setNavigationViewListner();
     }
 
@@ -111,11 +88,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 intent = new Intent(this, AddFriend.class);
                 startActivity(intent);
                 break;
-            case R.id.followed:
 
-                break;
             case R.id.status_update:
-
+                intent = new Intent(this, UpdateStatus.class);
+                startActivity(intent);
                 break;
         }
         mDrawerLayout = findViewById(R.id.drawer_layout);

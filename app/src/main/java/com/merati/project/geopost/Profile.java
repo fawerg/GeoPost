@@ -158,9 +158,6 @@ public class Profile extends AppCompatActivity implements NavigationView.OnNavig
                 intent = new Intent(this, AddFriend.class);
                 startActivity(intent);
                 break;
-            case R.id.followed:
-
-                break;
             case R.id.status_update:
 
                 break;
