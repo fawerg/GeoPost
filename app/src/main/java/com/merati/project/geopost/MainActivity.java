@@ -38,17 +38,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
-    public static String session_id;
+    Model myModel = Model.getInstance();
 
     ActionBarDrawerToggle mDrawerToggle;
-    LatLng last_location=null;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         Intent intent = getIntent();
-        session_id = intent.getStringExtra("session");
 
         DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
@@ -109,7 +108,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startActivity(intent);
                 break;
             case R.id.add_friend:
-
+                intent = new Intent(this, AddFriend.class);
+                startActivity(intent);
                 break;
             case R.id.followed:
 

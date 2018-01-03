@@ -18,25 +18,20 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class LoginActivity extends AppCompatActivity {
-    public static boolean logged = false;
 
+    Model myModel = Model.getInstance();
     public static String sessionId = null;
-    protected EditText username_field;
-    protected EditText password_field;
-    boolean connectionError;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-        username_field= (EditText)findViewById(R.id.username);
-        password_field= (EditText)findViewById(R.id.password);
-
     }
 
     protected void onClickLogin(View view){
         final String username, password;
-        username = username_field.getText().toString();
-        password = password_field.getText().toString();
+        username = ((EditText)findViewById(R.id.username)).getText().toString();
+        password = ((EditText)findViewById(R.id.password)).getText().toString();
         String url = "https://ewserver.di.unimi.it/mobicomp/geopost/login";
 
         RequestQueue queue = Volley.newRequestQueue(this);
@@ -50,7 +45,6 @@ public class LoginActivity extends AppCompatActivity {
                 new Response.ErrorListener(){
                     @Override
                     public void onErrorResponse(VolleyError error){
-                        connectionError=true;
                         sessionId= null;
                     }
                 }) {
@@ -68,9 +62,8 @@ public class LoginActivity extends AppCompatActivity {
 
     public void startBrowsing(){
         if (sessionId!= null){
-            logged= true;
             Intent intent = new Intent(this, MainActivity.class);
-            intent.putExtra("session", sessionId);
+            myModel.setSession(sessionId);
             startActivity(intent);
         }
     }

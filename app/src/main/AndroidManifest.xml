@@ -25,6 +25,11 @@
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDD1K1EyESop0XHU1QJGXvDOvkpQdhAfKY" />
 
+        <activity android:name=".Friends" />
+        <activity
+            android:name=".AddFriend"
+            android:label="@string/title_activity_add_friend"
+            android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
 
 </manifest>
