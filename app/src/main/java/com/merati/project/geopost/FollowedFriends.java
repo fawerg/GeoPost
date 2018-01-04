@@ -1,5 +1,6 @@
 package com.merati.project.geopost;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
@@ -13,10 +14,23 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
+
+import java.util.ArrayList;
+import java.util.List;
+
 public class FollowedFriends extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
     Model myModel = Model.getInstance();
     ActionBarDrawerToggle mDrawerToggle;
-
+    private List<Friend> friends = new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -41,11 +55,8 @@ public class FollowedFriends extends AppCompatActivity implements NavigationView
             }
         };
         myModel.setContext(this);
-        myModel.fetchFriends();
-
-        ListView friends_list = findViewById(R.id.friends_list);
-        FriendsAdapter myAdapter = new FriendsAdapter(this, android.R.layout.list_content, myModel.getFriends());
-        friends_list.setAdapter(myAdapter);
+        //myModel.fetchFriends();
+        fetchFriends(this);
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -54,12 +65,8 @@ public class FollowedFriends extends AppCompatActivity implements NavigationView
 
     protected void onResume(){
         super.onResume();
-        myModel.setContext(this);
+        fetchFriends(this);
 
-
-        ListView friends_list = findViewById(R.id.friends_list);
-        FriendsAdapter myAdapter = new FriendsAdapter(this, android.R.layout.list_content, myModel.getFriends());
-        friends_list.setAdapter(myAdapter);
     }
     private void setNavigationViewListner() {
         NavigationView navigationView = (NavigationView)findViewById(R.id.menulaterale);
@@ -108,6 +115,47 @@ public class FollowedFriends extends AppCompatActivity implements NavigationView
         mDrawerLayout.closeDrawer(GravityCompat.START);
 
         return false;
+    }
+
+    private void fetchFriends(final Context mContext){
+        String url = "https://ewserver.di.unimi.it/mobicomp/geopost/followed?session_id="+myModel.getSession();
+        RequestQueue queue = Volley.newRequestQueue(this);
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    myModel.clearFriends();
+                    JSONArray Jfriends = response.getJSONArray("followed");
+                    for (int i = 0; i < Jfriends.length(); i++){
+                        String name = Jfriends.getJSONObject(i).getString("username");
+                        String msg = Jfriends.getJSONObject(i).getString("msg");
+                        Double lat, lon;
+                        if(Jfriends.getJSONObject(i).getString("lat")!=null){
+                            lat = Jfriends.getJSONObject(i).getDouble("lat");
+                            lon = Jfriends.getJSONObject(i).getDouble("lon");
+                        }
+                        else{
+                            lat=0.0;
+                            lon=0.0;
+                        }
+                        myModel.addFriend(new Friend(name, msg,lat ,lon ));
+                        Log.d("Model: ", "friends cardinality "+friends.size());
+                        ListView friends_list = findViewById(R.id.friends_list);
+                        FriendsAdapter myAdapter = new FriendsAdapter(mContext, android.R.layout.list_content, myModel.getFriends());
+                        friends_list.setAdapter(myAdapter);
+
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        queue.add(request);
     }
 }
 

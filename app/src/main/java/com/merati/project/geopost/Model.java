@@ -1,22 +1,14 @@
 package com.merati.project.geopost;
 
-import android.app.VoiceInteractor;
 import android.content.Context;
 import android.location.Location;
 import android.util.Log;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
-import com.google.android.gms.maps.model.LatLng;
-
-import org.json.JSONArray;
-import org.json.JSONObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,14 +19,13 @@ import java.util.List;
 public class Model {
     private static final Model ourInstance = new Model();
     private String session_id;
-    private int LIMIT = 1000;
     private List<String> users = new ArrayList<>();
     private List<Friend> friends = new ArrayList<>();
     private Context currentContext = null;
     public static Model getInstance() {
         return ourInstance;
     }
-
+    private Friend profile = null;
     private Model() {
     }
 
@@ -46,77 +37,8 @@ public class Model {
         return session_id;
     }
 
-    public void fetchUsers(){
-
-        Log.d("Model: ", "in fetchUser()");
-        String url = "https://ewserver.di.unimi.it/mobicomp/geopost/users?session_id="+session_id+"&usernamestart=&limit="+1000;
-        final List<String> usernames = new ArrayList<>(LIMIT);
-        RequestQueue queue = Volley.newRequestQueue(currentContext);
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    users.clear();
-                    JSONArray jarray = response.getJSONArray("usernames");
-                    Log.d("Model: ", "try");
-                    for (int i = 0; i < jarray.length(); i++){
-                        users.add(jarray.getString(i));
-                        //Log.d("user "+i, response.getJSONArray("usernames").getString(i));
-                    }
-                } catch (Exception e) {
-                    Log.d("Model: ", "Exception in fetchUsers()");
-                    e.printStackTrace();
-                }
-                Log.d("Model: users number ", ""+users.size());
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.d("Model : ", "Volley Error in fetcUsers()");
-            }
-        });
-        queue.add(request);
-    }
-
     public List<String> getUsers(){
         return users;
-    }
-
-    public void fetchFriends(){
-        String url = "https://ewserver.di.unimi.it/mobicomp/geopost/followed?session_id="+session_id;
-        RequestQueue queue = Volley.newRequestQueue(currentContext);
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    friends.clear();
-                    JSONArray Jfriends = response.getJSONArray("followed");
-                    for (int i = 0; i < Jfriends.length(); i++){
-                        String name = Jfriends.getJSONObject(i).getString("username");
-                        String msg = Jfriends.getJSONObject(i).getString("msg");
-                        Double lat, lon;
-                        if(Jfriends.getJSONObject(i).getString("lat")!=null){
-                            lat = Jfriends.getJSONObject(i).getDouble("lat");
-                            lon = Jfriends.getJSONObject(i).getDouble("lon");
-                        }
-                        else{
-                            lat=0.0;
-                            lon=0.0;
-                        }
-                        friends.add(new Friend(name, msg,lat ,lon ));
-                        Log.d("Model: ", "friends cardinality "+friends.size());
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        });
-        queue.add(request);
     }
 
     public List<Friend> getFriends(){
@@ -160,5 +82,29 @@ public class Model {
             }
         });
         quesue.add(stringRequest);
+    }
+
+    public void clearUsers(){
+        users.clear();
+    }
+
+    public void addUser(String user){
+        users.add(user);
+    }
+
+    public void addFriend(Friend friend){
+        friends.add(friend);
+    }
+
+    public void clearFriends(){
+        friends.clear();
+    }
+
+    public void setProfile(Friend profile){
+        this.profile=profile;
+    }
+
+    public Friend getProfile(){
+        return profile;
     }
 }

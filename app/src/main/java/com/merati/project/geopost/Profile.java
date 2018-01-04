@@ -31,9 +31,9 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import org.json.JSONObject;
 
 
-public class Profile extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, OnMapReadyCallback{
-    ActionBarDrawerToggle mDrawerToggle;
+public class Profile extends AppCompatActivity implements OnMapReadyCallback{
     Model myModel = Model.getInstance();
+    GoogleMap mGoogleMap=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -42,27 +42,7 @@ public class Profile extends AppCompatActivity implements NavigationView.OnNavig
         MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
-        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
 
-                invalidateOptionsMenu();
-            }
-
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed(drawerView);
-                Log.d("onDrawerClosed", "onDrawerClosed: " + getTitle());
-
-                invalidateOptionsMenu();
-            }
-        };
-
-        mDrawerLayout.setDrawerListener(mDrawerToggle);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        setNavigationViewListner();
         getProfileInfo();
     }
 
@@ -70,10 +50,7 @@ public class Profile extends AppCompatActivity implements NavigationView.OnNavig
     public void onResume(){
         super.onResume();
     }
-    private void setNavigationViewListner() {
-        NavigationView navigationView = (NavigationView)findViewById(R.id.menulaterale);
-        navigationView.setNavigationItemSelectedListener(this);
-    }
+
 
     public void onLogout(View view){
         String url = "https://ewserver.di.unimi.it/mobicomp/geopost/logout?session_id="+myModel.getSession();
@@ -107,9 +84,20 @@ public class Profile extends AppCompatActivity implements NavigationView.OnNavig
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    ((TextView) findViewById(R.id.username)).setText(response.getString("username"));
-                    ((TextView) findViewById(R.id.status)).setText(""+response.getString("msg"));
-
+                    String name = response.getString("username");
+                    String msg = response.getString("msg");
+                    Double lat;
+                    Double lon;
+                    if(response.getString("lat")!=null){
+                        lat = response.getDouble("lat");
+                        lon = response.getDouble("lon");
+                    }
+                    else{
+                        lat=0.0;
+                        lon=0.0;
+                    }
+                    myModel.setProfile(new Friend(name,msg,lat,lon));
+                    showProfileInfo();
                 }
                 catch (Exception e){
                     e.printStackTrace();
@@ -125,54 +113,23 @@ public class Profile extends AppCompatActivity implements NavigationView.OnNavig
         queue.add(jsonRequest);
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Pass the event to ActionBarDrawerToggle
-        // If it returns true, then it has handled
-        // the nav drawer indicator touch event
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-
-        // Handle your other action bar items...
-
-        return super.onOptionsItemSelected(item);
-    }
-
-    @Override
-    protected void onPostCreate(Bundle savedInstanceState) {
-        super.onPostCreate(savedInstanceState);
-        mDrawerToggle.syncState();
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-        Intent intent;
-        DrawerLayout mDrawerLayout;
-        switch (item.getItemId()){
-            case R.id.profile:
-                intent = new Intent(this, Profile.class);
-                startActivity(intent);
-                break;
-            case R.id.add_friend:
-                intent = new Intent(this, AddFriend.class);
-                startActivity(intent);
-                break;
-            case R.id.status_update:
-
-                break;
-        }
-        mDrawerLayout = findViewById(R.id.drawer_layout);
-        mDrawerLayout.closeDrawer(GravityCompat.START);
-
-        return false;
-    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        LatLng sydney = new LatLng(-33.852, 151.211);
-        googleMap.addMarker(new MarkerOptions().position(sydney)
-                .title("Marker in Sydney"));
-        googleMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        if(myModel.getProfile()!=null){
+            mGoogleMap.addMarker(new MarkerOptions().position(myModel.getProfile().getLastPosition()).title("My last Position"));
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(myModel.getProfile().getLastPosition()));
+        }
+        mGoogleMap=googleMap;
+    }
+
+    public void showProfileInfo(){
+        ((TextView)findViewById(R.id.profile_name)).setText(myModel.getProfile().getName());
+        ((TextView)findViewById(R.id.profile_status)).setText(myModel.getProfile().getLast_status());
+        if(mGoogleMap!=null){
+            mGoogleMap.addMarker(new MarkerOptions().position(myModel.getProfile().getLastPosition()).title("My last Position"));
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(myModel.getProfile().getLastPosition()));
+            mGoogleMap.setMinZoomPreference(15);
+        }
     }
 }
