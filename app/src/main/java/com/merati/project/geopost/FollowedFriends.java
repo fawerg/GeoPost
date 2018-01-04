@@ -40,8 +40,9 @@ public class FollowedFriends extends AppCompatActivity implements NavigationView
                 invalidateOptionsMenu();
             }
         };
-
+        myModel.setContext(this);
         myModel.fetchFriends();
+
         ListView friends_list = findViewById(R.id.friends_list);
         FriendsAdapter myAdapter = new FriendsAdapter(this, android.R.layout.list_content, myModel.getFriends());
         friends_list.setAdapter(myAdapter);
@@ -51,6 +52,15 @@ public class FollowedFriends extends AppCompatActivity implements NavigationView
         setNavigationViewListner();
     }
 
+    protected void onResume(){
+        super.onResume();
+        myModel.setContext(this);
+
+
+        ListView friends_list = findViewById(R.id.friends_list);
+        FriendsAdapter myAdapter = new FriendsAdapter(this, android.R.layout.list_content, myModel.getFriends());
+        friends_list.setAdapter(myAdapter);
+    }
     private void setNavigationViewListner() {
         NavigationView navigationView = (NavigationView)findViewById(R.id.menulaterale);
         navigationView.setNavigationItemSelectedListener(this);
