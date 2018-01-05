@@ -54,8 +54,7 @@ public class FollowedFriends extends AppCompatActivity implements NavigationView
                 invalidateOptionsMenu();
             }
         };
-        myModel.setContext(this);
-        //myModel.fetchFriends();
+
         fetchFriends(this);
 
         mDrawerLayout.setDrawerListener(mDrawerToggle);

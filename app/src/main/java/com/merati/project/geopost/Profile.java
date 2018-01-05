@@ -1,8 +1,10 @@
 package com.merati.project.geopost;
 
+import android.app.ActionBar;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.NavUtils;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -34,12 +36,13 @@ import org.json.JSONObject;
 public class Profile extends AppCompatActivity implements OnMapReadyCallback{
     Model myModel = Model.getInstance();
     GoogleMap mGoogleMap=null;
+    MapFragment mapFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
-
-        MapFragment mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
 
@@ -49,6 +52,8 @@ public class Profile extends AppCompatActivity implements OnMapReadyCallback{
     @Override
     public void onResume(){
         super.onResume();
+        mapFragment.getMapAsync(this);
+        getProfileInfo();
     }
 
 
@@ -116,20 +121,34 @@ public class Profile extends AppCompatActivity implements OnMapReadyCallback{
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
-        if(myModel.getProfile()!=null){
+        if(myModel.getProfile()!=null && mGoogleMap!=null){
             mGoogleMap.addMarker(new MarkerOptions().position(myModel.getProfile().getLastPosition()).title("My last Position"));
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(myModel.getProfile().getLastPosition()));
+            mGoogleMap.moveCamera(CameraUpdateFactory.zoomTo(10));
+
         }
         mGoogleMap=googleMap;
     }
 
     public void showProfileInfo(){
-        ((TextView)findViewById(R.id.profile_name)).setText(myModel.getProfile().getName());
-        ((TextView)findViewById(R.id.profile_status)).setText(myModel.getProfile().getLast_status());
+        ((TextView)findViewById(R.id.username)).setText(myModel.getProfile().getName());
+        ((TextView)findViewById(R.id.status)).setText(myModel.getProfile().getLast_status());
         if(mGoogleMap!=null){
             mGoogleMap.addMarker(new MarkerOptions().position(myModel.getProfile().getLastPosition()).title("My last Position"));
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(myModel.getProfile().getLastPosition()));
-            mGoogleMap.setMinZoomPreference(15);
+            mGoogleMap.moveCamera(CameraUpdateFactory.zoomTo(10));
+
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

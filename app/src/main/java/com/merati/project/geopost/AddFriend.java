@@ -1,5 +1,6 @@
 package com.merati.project.geopost;
 
+import android.app.ActionBar;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -7,6 +8,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.NavUtils;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -41,14 +43,27 @@ public class AddFriend extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_friend);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Log.d("session_id ", myModel.getSession());
-        myModel.setContext(this);
         fetchUsers(this);
     }
 
     public void addFriend(View view){
         TextView username = findViewById(R.id.username_add_friend);
-        myModel.follow(username.getText().toString());
+        String url = "https://ewserver.di.unimi.it/mobicomp/geopost/follow?session_id="+myModel.getSession()+"&username="+username;
+        RequestQueue queue = Volley.newRequestQueue(this);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+            @Override
+            public void onResponse(String response) {
+                Log.d("AddFriend : ", "AddFriend response "+response);
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        queue.add(stringRequest);
     }
     @Override
     public void onResume(){
@@ -86,5 +101,16 @@ public class AddFriend extends AppCompatActivity{
             }
         });
         queue.add(request);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            // Respond to the action bar's Up/Home button
+            case android.R.id.home:
+                NavUtils.navigateUpFromSameTask(this);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }
