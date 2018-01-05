@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabLayout;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -13,6 +14,7 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.TabHost;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -27,7 +29,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FollowedFriends extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
+public class FollowedFriends extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, TabLayout.OnTabSelectedListener {
     Model myModel = Model.getInstance();
     ActionBarDrawerToggle mDrawerToggle;
     private List<Friend> friends = new ArrayList<>();
@@ -56,7 +58,7 @@ public class FollowedFriends extends AppCompatActivity implements NavigationView
         };
 
         fetchFriends(this);
-
+        ((TabLayout)findViewById(R.id.tabLayout)).addOnTabSelectedListener(this);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setNavigationViewListner();
@@ -155,6 +157,27 @@ public class FollowedFriends extends AppCompatActivity implements NavigationView
             }
         });
         queue.add(request);
+    }
+
+    @Override
+    public void onTabSelected(TabLayout.Tab tab) {
+        Log.d("OnTabSelected", tab.getText().toString());
+        if(tab.getText().toString().equals("Mappa")){
+            findViewById(R.id.friends_list).setVisibility(View.INVISIBLE);
+        }
+        else{
+            findViewById(R.id.friends_list).setVisibility(View.VISIBLE);
+        }
+    }
+
+    @Override
+    public void onTabUnselected(TabLayout.Tab tab) {
+
+    }
+
+    @Override
+    public void onTabReselected(TabLayout.Tab tab) {
+
     }
 }
 
