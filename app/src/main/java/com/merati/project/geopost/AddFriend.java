@@ -49,7 +49,7 @@ public class AddFriend extends AppCompatActivity{
     }
 
     public void addFriend(View view){
-        TextView username = findViewById(R.id.username_add_friend);
+        String username = ((TextView)findViewById(R.id.username_add_friend)).getText().toString();
         String url = "https://ewserver.di.unimi.it/mobicomp/geopost/follow?session_id="+myModel.getSession()+"&username="+username;
         RequestQueue queue = Volley.newRequestQueue(this);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {

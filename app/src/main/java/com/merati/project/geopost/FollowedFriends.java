@@ -220,7 +220,7 @@ public class FollowedFriends extends AppCompatActivity implements NavigationView
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
 
-        if(tab.getText().toString().equals("Mappa")){
+        if(tab.getText().toString().equals("Map")){
             Log.d("OnTabSelectd","Mappa visibile");
             findViewById(R.id.friends_list).setVisibility(View.INVISIBLE);
             findViewById(R.id.map).setVisibility(View.VISIBLE);
@@ -252,7 +252,7 @@ public class FollowedFriends extends AppCompatActivity implements NavigationView
         Log.d("ShowOnMap:" , "Before of the if");
         if(myModel.getFriends().size()!=0){
             for (int i =0; i< myModel.getFriends().size(); i++){
-                mGoogleMap.addMarker(new MarkerOptions().position(myModel.getFriends().get(i).getLastPosition()).title(myModel.getFriends().get(i).getName()));
+                mGoogleMap.addMarker(new MarkerOptions().position(myModel.getFriends().get(i).getLastPosition()).title(myModel.getFriends().get(i).getName()+" : "+myModel.getFriends().get(i).getLast_status()));
             }
             Log.d("ShowOnMap:", "added elements");
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(myModel.getFriends().get(0).getLastPosition()));

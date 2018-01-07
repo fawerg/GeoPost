@@ -1,6 +1,7 @@
 package com.merati.project.geopost;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -68,6 +69,10 @@ public class Profile extends AppCompatActivity implements OnMapReadyCallback{
     }
 
     public void logout(){
+        SharedPreferences settings= getSharedPreferences("PREF", 0);
+        SharedPreferences.Editor editor = settings.edit();
+        editor.putString("SESSION_ID", null);
+        editor.commit();
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }

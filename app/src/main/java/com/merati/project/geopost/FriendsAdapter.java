@@ -36,10 +36,10 @@ public class FriendsAdapter extends ArrayAdapter<Friend> {
             TextView tt1 = v.findViewById(R.id.name);
             TextView tt2 = v.findViewById(R.id.status);
             TextView tt3 = v.findViewById(R.id.distance);
-            tt1.setText(p.getName());
-            tt2.setText(p.getLast_status());
+            tt1.setText("Username: "+p.getName());
+            tt2.setText("Status: "+p.getLast_status());
 
-            tt3.setText(p.getDistance()+"");
+            tt3.setText("Distance: "+p.getDistance()+" Km");
         }
         return v;
     }

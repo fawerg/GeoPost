@@ -2,6 +2,7 @@ package com.merati.project.geopost;
 
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -23,10 +24,16 @@ import java.util.Map;
 public class LoginActivity extends AppCompatActivity {
 
     Model myModel = Model.getInstance();
-    public static String sessionId = null;
-
+    private String sessionId = null;
+    private SharedPreferences settings;
+    private SharedPreferences.Editor editor;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        settings = getSharedPreferences("PREF", 0);
+        sessionId = settings.getString("SESSION_ID", null);
+        if(sessionId!=null){
+            startBrowsing();
+        }
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
     }
@@ -43,6 +50,9 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         sessionId=response;
+                        editor= settings.edit();
+                        editor.putString("SESSION_ID", sessionId);
+                        editor.commit();
                         startBrowsing();
                     }},
                 new Response.ErrorListener(){
