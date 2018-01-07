@@ -1,6 +1,9 @@
 package com.merati.project.geopost;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -11,7 +14,7 @@ public class Model {
     private static final Model ourInstance = new Model();
     private String session_id;
     private List<String> users = new ArrayList<>();
-    private List<Friend> friends = new ArrayList<>();
+    private ArrayList<Friend> friends = new ArrayList<>();
     public static Model getInstance() {
         return ourInstance;
     }
@@ -57,5 +60,9 @@ public class Model {
 
     public Friend getProfile(){
         return profile;
+    }
+
+    public void sortFriends(){
+        Collections.sort(friends);
     }
 }

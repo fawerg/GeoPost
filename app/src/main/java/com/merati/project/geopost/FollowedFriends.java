@@ -2,6 +2,7 @@ package com.merati.project.geopost;
 
 import android.content.Context;
 import android.content.Intent;
+import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -22,6 +23,11 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -29,16 +35,22 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FollowedFriends extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, TabLayout.OnTabSelectedListener {
+public class FollowedFriends extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, TabLayout.OnTabSelectedListener , OnMapReadyCallback{
     Model myModel = Model.getInstance();
     ActionBarDrawerToggle mDrawerToggle;
-    private List<Friend> friends = new ArrayList<>();
-
+    GoogleMap mGoogleMap=null;
+    MapFragment mapFragment;
+    Friend profile = null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_followed_friends);
 
+        getProfileInfo(this);
+
+        ((TabLayout)findViewById(R.id.tabLayout)).addOnTabSelectedListener(this);
+        findViewById(R.id.map).setVisibility(View.INVISIBLE);
+        findViewById(R.id.friends_list).setVisibility(View.VISIBLE);
         DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
             @Override
@@ -56,18 +68,16 @@ public class FollowedFriends extends AppCompatActivity implements NavigationView
                 invalidateOptionsMenu();
             }
         };
-
-        fetchFriends(this);
-        ((TabLayout)findViewById(R.id.tabLayout)).addOnTabSelectedListener(this);
         mDrawerLayout.setDrawerListener(mDrawerToggle);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setNavigationViewListner();
+
+        mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
     }
 
     protected void onResume(){
         super.onResume();
-        fetchFriends(this);
-
     }
     private void setNavigationViewListner() {
         NavigationView navigationView = (NavigationView)findViewById(R.id.menulaterale);
@@ -125,13 +135,18 @@ public class FollowedFriends extends AppCompatActivity implements NavigationView
             @Override
             public void onResponse(JSONObject response) {
                 try {
+                    Location mLocation = new Location("Me");
+                    Location hLocation = new Location("He");
+                    mLocation.setLatitude(myModel.getProfile().getLastPosition().latitude);
+                    mLocation.setLongitude(myModel.getProfile().getLastPosition().longitude);
+                    Float distance;
                     myModel.clearFriends();
                     JSONArray Jfriends = response.getJSONArray("followed");
                     for (int i = 0; i < Jfriends.length(); i++){
                         String name = Jfriends.getJSONObject(i).getString("username");
                         String msg = Jfriends.getJSONObject(i).getString("msg");
                         Double lat, lon;
-                        if(Jfriends.getJSONObject(i).getString("lat")!=null){
+                        if(!Jfriends.getJSONObject(i).getString("lat").equals("null")){
                             lat = Jfriends.getJSONObject(i).getDouble("lat");
                             lon = Jfriends.getJSONObject(i).getDouble("lon");
                         }
@@ -139,13 +154,19 @@ public class FollowedFriends extends AppCompatActivity implements NavigationView
                             lat=0.0;
                             lon=0.0;
                         }
-                        myModel.addFriend(new Friend(name, msg,lat ,lon ));
-                        Log.d("Model: ", "friends cardinality "+friends.size());
-                        ListView friends_list = findViewById(R.id.friends_list);
-                        FriendsAdapter myAdapter = new FriendsAdapter(mContext, android.R.layout.list_content, myModel.getFriends());
-                        friends_list.setAdapter(myAdapter);
-
+                        hLocation.setLatitude(lat);
+                        hLocation.setLongitude(lon);
+                        distance=hLocation.distanceTo(mLocation)/1000;
+                        Log.d("Friend"+i, ": "+distance);
+                        myModel.addFriend(new Friend(name, msg,lat ,lon, distance));
                     }
+
+                    myModel.sortFriends();
+                    ListView friends_list = findViewById(R.id.friends_list);
+                    FriendsAdapter myAdapter = new FriendsAdapter(mContext, android.R.layout.list_content, myModel.getFriends());
+                    friends_list.setAdapter(myAdapter);
+                    showOnMap();
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -159,13 +180,54 @@ public class FollowedFriends extends AppCompatActivity implements NavigationView
         queue.add(request);
     }
 
+    public void getProfileInfo(final Context mContext){
+        String url = "https://ewserver.di.unimi.it/mobicomp/geopost/profile?session_id="+myModel.getSession();
+
+        RequestQueue queue = Volley.newRequestQueue(this);
+        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                try {
+                    String name = response.getString("username");
+                    String msg = response.getString("msg");
+                    Double lat;
+                    Double lon;
+                    if(response.getString("lat")!=null){
+                        lat = response.getDouble("lat");
+                        lon = response.getDouble("lon");
+                    }
+                    else{
+                        lat=0.0;
+                        lon=0.0;
+                    }
+                    myModel.setProfile(new Friend(name,msg,lat,lon, 0));
+                    Log.d("Followed:" ," Invoking fetchFriends method");
+                    fetchFriends(mContext);
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+
+            }
+        });
+        queue.add(jsonRequest);
+    }
     @Override
     public void onTabSelected(TabLayout.Tab tab) {
-        Log.d("OnTabSelected", tab.getText().toString());
+
         if(tab.getText().toString().equals("Mappa")){
+            Log.d("OnTabSelectd","Mappa visibile");
             findViewById(R.id.friends_list).setVisibility(View.INVISIBLE);
+            findViewById(R.id.map).setVisibility(View.VISIBLE);
         }
         else{
+            Log.d("OnTabSelectd","Lista visibile");
+            findViewById(R.id.map).setVisibility(View.INVISIBLE);
             findViewById(R.id.friends_list).setVisibility(View.VISIBLE);
         }
     }
@@ -178,6 +240,25 @@ public class FollowedFriends extends AppCompatActivity implements NavigationView
     @Override
     public void onTabReselected(TabLayout.Tab tab) {
 
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mGoogleMap=googleMap;
+        showOnMap();
+    }
+
+    public void showOnMap(){
+        Log.d("ShowOnMap:" , "Before of the if");
+        if(myModel.getFriends().size()!=0){
+            for (int i =0; i< myModel.getFriends().size(); i++){
+                mGoogleMap.addMarker(new MarkerOptions().position(myModel.getFriends().get(i).getLastPosition()).title(myModel.getFriends().get(i).getName()));
+            }
+            Log.d("ShowOnMap:", "added elements");
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(myModel.getFriends().get(0).getLastPosition()));
+            mGoogleMap.moveCamera(CameraUpdateFactory.zoomTo(10));
+
+        }
     }
 }
 

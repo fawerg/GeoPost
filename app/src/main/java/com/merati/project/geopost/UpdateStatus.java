@@ -54,19 +54,14 @@ public class UpdateStatus extends AppCompatActivity implements com.google.androi
                     .build();
         }
         mGoogleApiClient.connect();
-
-
     }
 
     public void updateStatus(View view){
 
-        String msg = ((TextView)findViewById(R.id.status)).getText().toString();
+        status = ((TextView)findViewById(R.id.status)).getText().toString();
         if(locationUpdate != null) {
             Log.d("UpdateStatus: ", "updateStatus is calling the model");
             requestUpdate();
-        }
-        else{
-            status=msg;
         }
         Log.d("UpdateStatus" , "Button update clicked; msg: "+status+" location: "+ locationUpdate);
     }

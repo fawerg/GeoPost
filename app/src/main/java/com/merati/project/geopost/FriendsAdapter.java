@@ -1,12 +1,13 @@
 package com.merati.project.geopost;
 
 import android.content.Context;
+import android.location.Location;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-
+import com.google.android.gms.maps.model.LatLng;
 import java.util.List;
 
 /**
@@ -14,6 +15,7 @@ import java.util.List;
  */
 
 public class FriendsAdapter extends ArrayAdapter<Friend> {
+
     public FriendsAdapter(Context context, int textViewResourceId) {
         super(context, textViewResourceId);
     }
@@ -36,7 +38,8 @@ public class FriendsAdapter extends ArrayAdapter<Friend> {
             TextView tt3 = v.findViewById(R.id.distance);
             tt1.setText(p.getName());
             tt2.setText(p.getLast_status());
-            tt3.setText(p.getLastPosition().toString());
+
+            tt3.setText(p.getDistance()+"");
         }
         return v;
     }

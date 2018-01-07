@@ -1,20 +1,13 @@
 package com.merati.project.geopost;
 
-import android.app.ActionBar;
 import android.content.Intent;
-import android.support.annotation.NonNull;
-import android.support.design.widget.NavigationView;
 import android.support.v4.app.NavUtils;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -27,7 +20,6 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import org.json.JSONObject;
@@ -101,8 +93,10 @@ public class Profile extends AppCompatActivity implements OnMapReadyCallback{
                         lat=0.0;
                         lon=0.0;
                     }
-                    myModel.setProfile(new Friend(name,msg,lat,lon));
+                    myModel.setProfile(new Friend(name,msg,lat,lon, 0));
                     showProfileInfo();
+                    Log.d("Profile :", " Data "+response.toString());
+                    Log.d("Profile: ", "Data from model "+myModel.getProfile().getLastPosition());
                 }
                 catch (Exception e){
                     e.printStackTrace();
