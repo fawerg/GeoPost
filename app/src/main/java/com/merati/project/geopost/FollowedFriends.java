@@ -39,6 +39,7 @@ public class FollowedFriends extends AppCompatActivity implements NavigationView
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_followed_friends);
+        overridePendingTransition(0,0);
         Intent intent = getIntent();
 
         mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);

@@ -28,6 +28,7 @@ public class AddFriend extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_friend);
+        overridePendingTransition(0,0);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         Log.d("session_id ", myModel.getSession());
         fetchUsers(this);
