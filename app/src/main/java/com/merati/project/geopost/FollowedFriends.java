@@ -15,8 +15,6 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
-import android.widget.TabHost;
-
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -28,12 +26,8 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.MarkerOptions;
-
 import org.json.JSONArray;
 import org.json.JSONObject;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class FollowedFriends extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, TabLayout.OnTabSelectedListener , OnMapReadyCallback{
     Model myModel = Model.getInstance();
@@ -45,12 +39,25 @@ public class FollowedFriends extends AppCompatActivity implements NavigationView
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_followed_friends);
+        Intent intent = getIntent();
 
-        getProfileInfo(this);
+        mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
+
+        if(intent.getBooleanExtra("refresh", false)){
+            getProfileInfo(this);
+        }
+        else{
+            ListView friends_list = findViewById(R.id.friends_list);
+            FriendsAdapter myAdapter = new FriendsAdapter(this, android.R.layout.list_content, myModel.getFriends());
+            friends_list.setAdapter(myAdapter);
+            showOnMap();
+        }
 
         ((TabLayout)findViewById(R.id.tabLayout)).addOnTabSelectedListener(this);
         findViewById(R.id.map).setVisibility(View.INVISIBLE);
         findViewById(R.id.friends_list).setVisibility(View.VISIBLE);
+
         DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
             @Override
@@ -72,8 +79,7 @@ public class FollowedFriends extends AppCompatActivity implements NavigationView
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         setNavigationViewListner();
 
-        mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+
     }
 
     protected void onResume(){
@@ -250,7 +256,7 @@ public class FollowedFriends extends AppCompatActivity implements NavigationView
 
     public void showOnMap(){
         Log.d("ShowOnMap:" , "Before of the if");
-        if(myModel.getFriends().size()!=0){
+        if(myModel.getFriends().size()!=0 && mGoogleMap!=null){
             for (int i =0; i< myModel.getFriends().size(); i++){
                 mGoogleMap.addMarker(new MarkerOptions().position(myModel.getFriends().get(i).getLastPosition()).title(myModel.getFriends().get(i).getName()+" : "+myModel.getFriends().get(i).getLast_status()));
             }

@@ -1,7 +1,5 @@
 package com.merati.project.geopost;
 
-import com.google.android.gms.maps.model.LatLng;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
