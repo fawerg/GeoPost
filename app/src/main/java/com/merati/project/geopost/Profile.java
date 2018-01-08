@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
@@ -13,7 +12,6 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -75,7 +73,7 @@ public class Profile extends AppCompatActivity implements OnMapReadyCallback{
     @Override
     public void onMapReady(GoogleMap googleMap) {
         if(myModel.getProfile()!=null && mGoogleMap!=null){
-            mGoogleMap.addMarker(new MarkerOptions().position(myModel.getProfile().getLastPosition()).title("My last Position"));
+            mGoogleMap.addMarker(new MarkerOptions().position(myModel.getProfile().getLastPosition()).title("Me: "+myModel.getProfile().getLast_status()));
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(myModel.getProfile().getLastPosition()));
             mGoogleMap.moveCamera(CameraUpdateFactory.zoomTo(10));
 
@@ -87,7 +85,7 @@ public class Profile extends AppCompatActivity implements OnMapReadyCallback{
         ((TextView)findViewById(R.id.username)).setText(myModel.getProfile().getName());
         ((TextView)findViewById(R.id.status)).setText(myModel.getProfile().getLast_status());
         if(mGoogleMap!=null){
-            mGoogleMap.addMarker(new MarkerOptions().position(myModel.getProfile().getLastPosition()).title("My last Position"));
+            mGoogleMap.addMarker(new MarkerOptions().position(myModel.getProfile().getLastPosition()).title("Me: "+myModel.getProfile().getLast_status()));
             mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(myModel.getProfile().getLastPosition()));
             mGoogleMap.moveCamera(CameraUpdateFactory.zoomTo(10));
 
