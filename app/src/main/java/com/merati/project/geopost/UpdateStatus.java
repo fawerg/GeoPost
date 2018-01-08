@@ -65,12 +65,13 @@ public class UpdateStatus extends AppCompatActivity implements com.google.androi
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
             @Override
             public void onResponse(String response) {
-                Log.d("Model: ", "updateStatus response");
+                Log.d("Update Status: ", "updateStatus response");
+                myModel.setProfile(new Friend(myModel.getProfile().getName(), status, locationUpdate.getLatitude(), locationUpdate.getLongitude(), 0));
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-                Log.d("Model: ", "updateStatus error");
+                Log.d("Update Status: ", "updateStatus error");
             }
         });
         quesue.add(stringRequest);

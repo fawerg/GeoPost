@@ -22,8 +22,6 @@ import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.MarkerOptions;
 
-import org.json.JSONObject;
-
 
 public class Profile extends AppCompatActivity implements OnMapReadyCallback{
     Model myModel = Model.getInstance();
@@ -37,15 +35,13 @@ public class Profile extends AppCompatActivity implements OnMapReadyCallback{
         mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-
-        getProfileInfo();
+        showProfileInfo();
     }
 
     @Override
     public void onResume(){
         super.onResume();
         mapFragment.getMapAsync(this);
-        getProfileInfo();
     }
 
 
@@ -75,47 +71,6 @@ public class Profile extends AppCompatActivity implements OnMapReadyCallback{
         Intent intent = new Intent(this, LoginActivity.class);
         startActivity(intent);
     }
-
-    protected void getProfileInfo(){
-        Log.d("session_id", myModel.getSession());
-        String url = "https://ewserver.di.unimi.it/mobicomp/geopost/profile?session_id="+myModel.getSession();
-
-        RequestQueue queue = Volley.newRequestQueue(this);
-        JsonObjectRequest jsonRequest = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-            @Override
-            public void onResponse(JSONObject response) {
-                try {
-                    String name = response.getString("username");
-                    String msg = response.getString("msg");
-                    Double lat;
-                    Double lon;
-                    if(response.getString("lat")!=null){
-                        lat = response.getDouble("lat");
-                        lon = response.getDouble("lon");
-                    }
-                    else{
-                        lat=0.0;
-                        lon=0.0;
-                    }
-                    myModel.setProfile(new Friend(name,msg,lat,lon, 0));
-                    showProfileInfo();
-                    Log.d("Profile :", " Data "+response.toString());
-                    Log.d("Profile: ", "Data from model "+myModel.getProfile().getLastPosition());
-                }
-                catch (Exception e){
-                    e.printStackTrace();
-                }
-
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-
-            }
-        });
-        queue.add(jsonRequest);
-    }
-
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
