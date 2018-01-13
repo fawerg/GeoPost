@@ -24,12 +24,20 @@ import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 
-public class UpdateStatus extends AppCompatActivity implements com.google.android.gms.location.LocationListener, GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener{
+public class UpdateStatus extends AppCompatActivity implements com.google.android.gms.location.LocationListener, GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback{
     Model myModel = Model.getInstance();
     String status = null;
     Location locationUpdate = null;
     GoogleApiClient mGoogleApiClient = null;
+    GoogleMap mGoogleMap=null;
+    MapFragment mapFragment;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -48,6 +56,8 @@ public class UpdateStatus extends AppCompatActivity implements com.google.androi
                     .build();
         }
         mGoogleApiClient.connect();
+        mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
+        mapFragment.getMapAsync(this);
     }
 
     public void updateStatus(View view){
@@ -80,6 +90,11 @@ public class UpdateStatus extends AppCompatActivity implements com.google.androi
     @Override
     public void onLocationChanged(Location location) {
         locationUpdate = location;
+        if(mGoogleMap!= null) {
+            mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("Me" ));
+            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
+            mGoogleMap.moveCamera(CameraUpdateFactory.zoomTo(10));
+        }
         Log.d("UpdateStatus: ", "onLocationChanged");
         if(status!= null){
             requestUpdate();
@@ -118,5 +133,10 @@ public class UpdateStatus extends AppCompatActivity implements com.google.androi
                 return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mGoogleMap=googleMap;
     }
 }

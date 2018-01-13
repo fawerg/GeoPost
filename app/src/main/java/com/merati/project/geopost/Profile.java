@@ -33,7 +33,6 @@ public class Profile extends AppCompatActivity implements OnMapReadyCallback{
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-
         showProfileInfo();
     }
 
