@@ -45,15 +45,7 @@ public class FollowedFriends extends AppCompatActivity implements NavigationView
         mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
 
-        if(intent.getBooleanExtra("refresh", false)){
-            getProfileInfo(this);
-        }
-        else{
-            ListView friends_list = findViewById(R.id.friends_list);
-            FriendsAdapter myAdapter = new FriendsAdapter(this, android.R.layout.list_content, myModel.getFriends());
-            friends_list.setAdapter(myAdapter);
-            showOnMap();
-        }
+        getProfileInfo(this);
 
         ((TabLayout)findViewById(R.id.tabLayout)).addOnTabSelectedListener(this);
         findViewById(R.id.map).setVisibility(View.INVISIBLE);
