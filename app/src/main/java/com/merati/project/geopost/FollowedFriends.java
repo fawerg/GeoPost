@@ -1,11 +1,16 @@
 package com.merati.project.geopost;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -21,20 +26,30 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationRequest;
+import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-public class FollowedFriends extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, TabLayout.OnTabSelectedListener , OnMapReadyCallback{
+import java.text.DecimalFormat;
+
+public class FollowedFriends extends AppCompatActivity implements com.google.android.gms.location.LocationListener, GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener,NavigationView.OnNavigationItemSelectedListener, TabLayout.OnTabSelectedListener , OnMapReadyCallback{
     Model myModel = Model.getInstance();
     ActionBarDrawerToggle mDrawerToggle;
     GoogleMap mGoogleMap=null;
     MapFragment mapFragment;
-    Friend profile = null;
+    GoogleApiClient mGoogleApiClient = null;
+    Location myLocation=null;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -50,6 +65,19 @@ public class FollowedFriends extends AppCompatActivity implements NavigationView
         ((TabLayout)findViewById(R.id.tabLayout)).addOnTabSelectedListener(this);
         findViewById(R.id.map).setVisibility(View.INVISIBLE);
         findViewById(R.id.friends_list).setVisibility(View.VISIBLE);
+
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
+        }
+
+        if (mGoogleApiClient == null) {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .addApi(LocationServices.API)
+                    .build();
+        }
+        mGoogleApiClient.connect();
 
         DrawerLayout mDrawerLayout = findViewById(R.id.drawer_layout);
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, R.string.drawer_open, R.string.drawer_close) {
@@ -155,11 +183,14 @@ public class FollowedFriends extends AppCompatActivity implements NavigationView
                         }
                         hLocation.setLatitude(lat);
                         hLocation.setLongitude(lon);
-                        distance=hLocation.distanceTo(mLocation)/1000;
+                        DecimalFormat df = new DecimalFormat("#.##");
+                        if(myLocation==null)
+                            distance=hLocation.distanceTo(mLocation)/1000;
+                        else
+                            distance=myLocation.distanceTo(hLocation)/1000;
                         Log.d("Friend"+i, ": "+distance);
-                        myModel.addFriend(new Friend(name, msg,lat ,lon, distance));
+                        myModel.addFriend(new Friend(name, msg,lat ,lon, Float.parseFloat(df.format(distance))));
                     }
-
                     myModel.sortFriends();
                     ListView friends_list = findViewById(R.id.friends_list);
                     FriendsAdapter myAdapter = new FriendsAdapter(mContext, android.R.layout.list_content, myModel.getFriends());
@@ -244,19 +275,57 @@ public class FollowedFriends extends AppCompatActivity implements NavigationView
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mGoogleMap=googleMap;
-        showOnMap();
+        if(myLocation!=null) {
+            showOnMap();
+        }
     }
 
     public void showOnMap(){
         Log.d("ShowOnMap:" , "Before of the if");
+        LatLngBounds.Builder builder = new LatLngBounds.Builder();
+        Marker marker=null;
         if(myModel.getFriends().size()!=0 && mGoogleMap!=null){
             for (int i =0; i< myModel.getFriends().size(); i++){
-                mGoogleMap.addMarker(new MarkerOptions().position(myModel.getFriends().get(i).getLastPosition()).title(myModel.getFriends().get(i).getName()+" : "+myModel.getFriends().get(i).getLast_status()));
+                marker = mGoogleMap.addMarker(new MarkerOptions().position(myModel.getFriends().get(i).getLastPosition()).title(myModel.getFriends().get(i).getName()+" : "+myModel.getFriends().get(i).getLast_status()));
+                builder.include(marker.getPosition());
             }
+            LatLngBounds bounds = builder.build();
             Log.d("ShowOnMap:", "added elements");
-            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(myModel.getFriends().get(0).getLastPosition()));
-            mGoogleMap.moveCamera(CameraUpdateFactory.zoomTo(10));
 
+            mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 40));
+            if(myModel.getFriends().size()==1)
+                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(),10));
+
+        }
+    }
+
+    @Override
+    public void onConnected(@Nullable Bundle bundle) {
+        LocationRequest mLocationRequest = new LocationRequest();
+        mLocationRequest.setInterval(10000);
+        mLocationRequest.setFastestInterval(5000);
+        mLocationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            Log.d("UpdateStatus", "checking permission...");
+            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, mLocationRequest, this);
+        }
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
+
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        myLocation=location;
+        if(mGoogleMap!=null){
+            fetchFriends(this);
         }
     }
 }
