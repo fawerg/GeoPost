@@ -10,16 +10,7 @@
             android:enabled="true"
             android:title="Profile"
             android:visible="true" />
-
-        <item
-            android:id="@+id/followed"
-            android:checkable="false"
-            android:checked="false"
-            android:enabled="true"
-            android:title="Followed"
-            android:visible="true"
-            android:icon="@drawable/ic_people_black_24px"/>
-
+        
         <item
             android:id="@+id/add_friend"
             android:checkable="false"

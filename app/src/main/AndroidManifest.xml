@@ -3,7 +3,8 @@
     package="com.merati.project.geopost">
 
     <uses-permission android:name="android.permission.INTERNET" />
-
+    <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+    <uses-feature android:name="android.hardware.location.gps" />
     <application
         android:allowBackup="true"
         android:icon="@drawable/ic_whatshot_black_24px"
@@ -11,6 +12,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+
         <activity android:name=".LoginActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -18,7 +20,47 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".MainActivity"></activity>
+
+
+        <activity android:name=".FollowedFriends" />
+
+
+        <activity
+            android:name=".Profile"
+            android:parentActivityName=".FollowedFriends">
+
+            <meta-data
+                android:name="PARENT_ACTIVITY"
+                android:value=".FollowedFriends">
+            </meta-data>
+        </activity>
+
+
+
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDD1K1EyESop0XHU1QJGXvDOvkpQdhAfKY" />
+
+
+        <activity
+            android:name=".AddFriend"
+            android:theme="@style/AppTheme"
+            android:parentActivityName=".FollowedFriends">
+            <meta-data
+                android:name="PARENT_ACTIVITY"
+                android:value=".FollowedFriends">
+            </meta-data>
+        </activity>
+
+
+        <activity
+            android:name=".UpdateStatus"
+            android:parentActivityName=".FollowedFriends">
+            <meta-data
+                android:name="PARENT_ACTIVITY"
+                android:value=".FollowedFriends">
+            </meta-data>
+        </activity>
     </application>
 
 </manifest>
