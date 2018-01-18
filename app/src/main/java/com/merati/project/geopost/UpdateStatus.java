@@ -5,6 +5,7 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.ContextCompat;
@@ -77,11 +78,14 @@ public class UpdateStatus extends AppCompatActivity implements com.google.androi
             @Override
             public void onResponse(String response) {
                 Log.d("Update Status: ", "updateStatus response");
+                Snackbar.make(findViewById(R.id.status_update_layout), "Status updated successfully", Snackbar.LENGTH_SHORT).show();
                 myModel.setProfile(new Friend(myModel.getProfile().getName(), status, locationUpdate.getLatitude(), locationUpdate.getLongitude(), 0));
+                ((TextView)findViewById(R.id.status)).setText("");
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+                Snackbar.make(findViewById(R.id.status_update_layout), "Network failure", Snackbar.LENGTH_SHORT).show();
                 Log.d("Update Status: ", "updateStatus error");
             }
         });

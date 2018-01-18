@@ -2,6 +2,7 @@ package com.merati.project.geopost;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -53,6 +54,7 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error){
                         sessionId= null;
+                        Snackbar.make(findViewById(R.id.login_layout), "LOGIN ERROR", Snackbar.LENGTH_SHORT).show();
                     }
                 }) {
             @Override

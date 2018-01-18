@@ -1,8 +1,11 @@
 package com.merati.project.geopost;
 
+import android.app.Dialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -48,11 +51,13 @@ public class AddFriend extends AppCompatActivity implements TextWatcher{
             @Override
             public void onResponse(String response) {
                 Log.d("AddFriend : ", "AddFriend response "+response);
+                Snackbar.make(findViewById(R.id.add_friend_layout), response, Snackbar.LENGTH_SHORT).show();
+                ((TextView)findViewById(R.id.username_add_friend)).setText("");
             }
         }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
-
+                Snackbar.make(findViewById(R.id.add_friend_layout), new String(error.networkResponse.data), Snackbar.LENGTH_SHORT).show();
             }
         });
         queue.add(stringRequest);

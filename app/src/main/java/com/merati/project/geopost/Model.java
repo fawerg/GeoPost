@@ -45,7 +45,13 @@ public class Model {
     }
 
     public void addFriend(Friend friend){
-        friends.add(friend);
+        if (!friend.getLast_status().equals("null")){
+            friends.add(friend);
+        }
+        else{
+            friends.add(new Friend(friend.getName(), "", friend.getLastPosition().latitude, friend.getLastPosition().longitude, friend.getDistance()));
+        }
+
     }
 
     public void clearFriends(){
@@ -53,7 +59,11 @@ public class Model {
     }
 
     public void setProfile(Friend profile){
-        this.profile=profile;
+        if(!profile.getLast_status().equals("null")) {
+            this.profile = profile;
+        }
+        else
+            this.profile=new Friend(profile.getName(), "", profile.getLastPosition().latitude, profile.getLastPosition().longitude, profile.getDistance());
     }
 
     public Friend getProfile(){
