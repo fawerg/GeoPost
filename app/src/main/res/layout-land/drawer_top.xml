@@ -20,6 +20,7 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/imageView"
         android:layout_centerHorizontal="true"
+        android:fontFamily="@font/cagliostro"
         android:gravity="center_horizontal"
         android:paddingBottom="4dp"
         android:text="GEOPOST"

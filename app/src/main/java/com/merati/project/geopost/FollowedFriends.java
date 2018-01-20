@@ -161,45 +161,11 @@ public class FollowedFriends extends AppCompatActivity implements com.google.and
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
             @Override
             public void onResponse(JSONObject response) {
-                try {
-                    Location mLocation = new Location("Me");
-                    Location hLocation = new Location("He");
-                    mLocation.setLatitude(myModel.getProfile().getLastPosition().latitude);
-                    mLocation.setLongitude(myModel.getProfile().getLastPosition().longitude);
-                    Float distance;
-                    myModel.clearFriends();
-                    JSONArray Jfriends = response.getJSONArray("followed");
-                    for (int i = 0; i < Jfriends.length(); i++){
-                        String name = Jfriends.getJSONObject(i).getString("username");
-                        String msg = Jfriends.getJSONObject(i).getString("msg");
-                        Double lat, lon;
-                        if(!Jfriends.getJSONObject(i).getString("lat").equals("null")){
-                            lat = Jfriends.getJSONObject(i).getDouble("lat");
-                            lon = Jfriends.getJSONObject(i).getDouble("lon");
-                        }
-                        else{
-                            lat=0.0;
-                            lon=0.0;
-                        }
-                        hLocation.setLatitude(lat);
-                        hLocation.setLongitude(lon);
-                        DecimalFormat df = new DecimalFormat("#.##");
-                        if(myLocation==null)
-                            distance=hLocation.distanceTo(mLocation)/1000;
-                        else
-                            distance=myLocation.distanceTo(hLocation)/1000;
-                        Log.d("Friend"+i, ": "+distance);
-                        myModel.addFriend(new Friend(name, msg,lat ,lon, Float.parseFloat(df.format(distance))));
-                    }
-                    myModel.sortFriends();
-                    ListView friends_list = findViewById(R.id.friends_list);
-                    FriendsAdapter myAdapter = new FriendsAdapter(mContext, android.R.layout.list_content, myModel.getFriends());
-                    friends_list.setAdapter(myAdapter);
-                    showOnMap();
-
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
+                myModel.deserializeFriends(response, myLocation);
+                ListView friends_list = findViewById(R.id.friends_list);
+                FriendsAdapter myAdapter = new FriendsAdapter(mContext, android.R.layout.list_content, myModel.getFriends());
+                friends_list.setAdapter(myAdapter);
+                showOnMap();
             }
         }, new Response.ErrorListener() {
             @Override
@@ -218,19 +184,7 @@ public class FollowedFriends extends AppCompatActivity implements com.google.and
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    String name = response.getString("username");
-                    String msg = response.getString("msg");
-                    Double lat;
-                    Double lon;
-                    if(response.getString("lat")!=null){
-                        lat = response.getDouble("lat");
-                        lon = response.getDouble("lon");
-                    }
-                    else{
-                        lat=0.0;
-                        lon=0.0;
-                    }
-                    myModel.setProfile(new Friend(name,msg,lat,lon, 0));
+                    myModel.deserializeProfile(response);
                     Log.d("Followed:" ," Invoking fetchFriends method");
                     fetchFriends(mContext);
                 }

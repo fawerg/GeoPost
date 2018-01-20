@@ -1,5 +1,13 @@
 package com.merati.project.geopost;
 
+import android.location.Location;
+import android.util.Log;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -72,5 +80,62 @@ public class Model {
 
     public void sortFriends(){
         Collections.sort(friends);
+    }
+
+    public void deserializeProfile(JSONObject response){
+        try {
+            String name = response.getString("username");
+            String msg = response.getString("msg");
+            Double lat;
+            Double lon;
+            if (response.getString("lat") != null) {
+                lat = response.getDouble("lat");
+                lon = response.getDouble("lon");
+            } else {
+                lat = 0.0;
+                lon = 0.0;
+            }
+            setProfile(new Friend(name, msg, lat, lon, 0));
+        }
+        catch(JSONException e){
+            e.printStackTrace();
+        }
+    }
+
+    public void deserializeFriends(JSONObject response, Location myLocation){
+        Location mLocation = new Location("Me");
+        Location hLocation = new Location("He");
+        mLocation.setLatitude(profile.getLastPosition().latitude);
+        mLocation.setLongitude(profile.getLastPosition().longitude);
+        Float distance;
+        clearFriends();
+        try {
+            JSONArray Jfriends = response.getJSONArray("followed");
+            for (int i = 0; i < Jfriends.length(); i++) {
+                String name = Jfriends.getJSONObject(i).getString("username");
+                String msg = Jfriends.getJSONObject(i).getString("msg");
+                Double lat, lon;
+                if (!Jfriends.getJSONObject(i).getString("lat").equals("null")) {
+                    lat = Jfriends.getJSONObject(i).getDouble("lat");
+                    lon = Jfriends.getJSONObject(i).getDouble("lon");
+                } else {
+                    lat = 0.0;
+                    lon = 0.0;
+                }
+                hLocation.setLatitude(lat);
+                hLocation.setLongitude(lon);
+                DecimalFormat df = new DecimalFormat("#.##");
+                if (myLocation == null)
+                    distance = hLocation.distanceTo(mLocation) / 1000;
+                else
+                    distance = myLocation.distanceTo(hLocation) / 1000;
+                Log.d("Friend" + i, ": " + distance);
+                addFriend(new Friend(name, msg, lat, lon, Float.parseFloat(df.format(distance))));
+            }
+            sortFriends();
+        }
+        catch (JSONException e){
+            e.printStackTrace();
+        }
     }
 }
