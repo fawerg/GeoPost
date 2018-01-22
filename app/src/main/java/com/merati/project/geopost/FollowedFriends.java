@@ -8,6 +8,7 @@ import android.location.Location;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.NavigationView;
+import android.support.design.widget.TabItem;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
@@ -63,9 +64,16 @@ public class FollowedFriends extends AppCompatActivity implements com.google.and
         getProfileInfo(this);
 
         ((TabLayout)findViewById(R.id.tabLayout)).addOnTabSelectedListener(this);
-        findViewById(R.id.map).setVisibility(View.INVISIBLE);
-        findViewById(R.id.friends_list).setVisibility(View.VISIBLE);
-
+        if(savedInstanceState!=null) {
+            if (savedInstanceState.getBoolean("map")) {
+                Log.d("OnCreate", "restoring tabs");
+                ((TabLayout)findViewById(R.id.tabLayout)).getTabAt(1).select();
+            }
+        }
+        else {
+            findViewById(R.id.map).setVisibility(View.INVISIBLE);
+            findViewById(R.id.friends_list).setVisibility(View.VISIBLE);
+        }
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, 1);
         }
@@ -281,6 +289,13 @@ public class FollowedFriends extends AppCompatActivity implements com.google.and
         if(mGoogleMap!=null){
             fetchFriends(this);
         }
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        Log.d("OnSave:", "saving tabs");
+        savedInstanceState.putBoolean("map", findViewById(R.id.map).getVisibility()==View.VISIBLE);
     }
 }
 

@@ -29,12 +29,14 @@
             <android.support.design.widget.TabItem
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:text="List" />
+                android:text="List"
+                android:id="@+id/list_tab"/>
 
             <android.support.design.widget.TabItem
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Map" />
+                android:text="Map"
+                android:id="@+id/map_tab"/>
         </android.support.design.widget.TabLayout>
 
         <ListView
