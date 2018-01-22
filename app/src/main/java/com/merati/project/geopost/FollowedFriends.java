@@ -246,9 +246,9 @@ public class FollowedFriends extends AppCompatActivity implements com.google.and
             LatLngBounds bounds = builder.build();
             Log.d("ShowOnMap:", "added elements");
 
-            mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 40));
+            mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngBounds(bounds, 100));
             if(myModel.getFriends().size()==1)
-                mGoogleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(),10));
+                mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(marker.getPosition(),10));
 
         }
     }

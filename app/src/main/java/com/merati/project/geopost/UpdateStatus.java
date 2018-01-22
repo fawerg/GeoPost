@@ -96,8 +96,7 @@ public class UpdateStatus extends AppCompatActivity implements com.google.androi
         locationUpdate = location;
         if(mGoogleMap!= null) {
             mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("Me" ));
-            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(new LatLng(location.getLatitude(), location.getLongitude())));
-            mGoogleMap.moveCamera(CameraUpdateFactory.zoomTo(10));
+            mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 10));
         }
         Log.d("UpdateStatus: ", "onLocationChanged");
         if(status!= null){
