@@ -74,9 +74,7 @@ public class Profile extends AppCompatActivity implements OnMapReadyCallback{
     public void onMapReady(GoogleMap googleMap) {
         if(myModel.getProfile()!=null && mGoogleMap!=null){
             mGoogleMap.addMarker(new MarkerOptions().position(myModel.getProfile().getLastPosition()).title("Me: "+myModel.getProfile().getLast_status()));
-            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(myModel.getProfile().getLastPosition()));
-            mGoogleMap.moveCamera(CameraUpdateFactory.zoomTo(10));
-
+            mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myModel.getProfile().getLastPosition(),10));
         }
         mGoogleMap=googleMap;
     }
@@ -86,9 +84,7 @@ public class Profile extends AppCompatActivity implements OnMapReadyCallback{
         ((TextView)findViewById(R.id.status)).setText(myModel.getProfile().getLast_status());
         if(mGoogleMap!=null){
             mGoogleMap.addMarker(new MarkerOptions().position(myModel.getProfile().getLastPosition()).title("Me: "+myModel.getProfile().getLast_status()));
-            mGoogleMap.moveCamera(CameraUpdateFactory.newLatLng(myModel.getProfile().getLastPosition()));
-            mGoogleMap.moveCamera(CameraUpdateFactory.zoomTo(10));
-
+            mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(myModel.getProfile().getLastPosition(),10));
         }
     }
 

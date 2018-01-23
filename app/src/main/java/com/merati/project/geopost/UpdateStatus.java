@@ -30,6 +30,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapFragment;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 public class UpdateStatus extends AppCompatActivity implements com.google.android.gms.location.LocationListener, GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener, OnMapReadyCallback{
@@ -39,6 +40,7 @@ public class UpdateStatus extends AppCompatActivity implements com.google.androi
     GoogleApiClient mGoogleApiClient = null;
     GoogleMap mGoogleMap=null;
     MapFragment mapFragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,6 +97,7 @@ public class UpdateStatus extends AppCompatActivity implements com.google.androi
     public void onLocationChanged(Location location) {
         locationUpdate = location;
         if(mGoogleMap!= null) {
+            mGoogleMap.clear();
             mGoogleMap.addMarker(new MarkerOptions().position(new LatLng(location.getLatitude(), location.getLongitude())).title("Me" ));
             mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 10));
         }

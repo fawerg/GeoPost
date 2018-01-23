@@ -69,6 +69,10 @@ public class FollowedFriends extends AppCompatActivity implements com.google.and
                 Log.d("OnCreate", "restoring tabs");
                 ((TabLayout)findViewById(R.id.tabLayout)).getTabAt(1).select();
             }
+            else{
+                findViewById(R.id.map).setVisibility(View.INVISIBLE);
+                findViewById(R.id.friends_list).setVisibility(View.VISIBLE);
+            }
         }
         else {
             findViewById(R.id.map).setVisibility(View.INVISIBLE);
@@ -298,4 +302,3 @@ public class FollowedFriends extends AppCompatActivity implements com.google.and
         savedInstanceState.putBoolean("map", findViewById(R.id.map).getVisibility()==View.VISIBLE);
     }
 }
-
