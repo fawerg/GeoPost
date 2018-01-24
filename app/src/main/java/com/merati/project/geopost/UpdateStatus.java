@@ -45,6 +45,7 @@ public class UpdateStatus extends AppCompatActivity implements com.google.androi
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_update_status);
+        setTitle("Update Status");
         overridePendingTransition(0,0);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {

@@ -29,6 +29,7 @@ public class Profile extends AppCompatActivity implements OnMapReadyCallback{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_profile);
+        setTitle("Profile");
         overridePendingTransition(0,0);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         mapFragment = (MapFragment) getFragmentManager().findFragmentById(R.id.map);

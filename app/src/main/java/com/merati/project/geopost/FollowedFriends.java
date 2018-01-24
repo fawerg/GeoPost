@@ -55,6 +55,7 @@ public class FollowedFriends extends AppCompatActivity implements com.google.and
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_followed_friends);
+        setTitle("Followed");
         overridePendingTransition(0,0);
         Intent intent = getIntent();
 
