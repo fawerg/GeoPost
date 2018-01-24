@@ -118,19 +118,16 @@ public class Model {
                 if (!Jfriends.getJSONObject(i).getString("lat").equals("null")) {
                     lat = Jfriends.getJSONObject(i).getDouble("lat");
                     lon = Jfriends.getJSONObject(i).getDouble("lon");
-                } else {
-                    lat = 0.0;
-                    lon = 0.0;
+                    hLocation.setLatitude(lat);
+                    hLocation.setLongitude(lon);
+                    DecimalFormat df = new DecimalFormat("#.##");
+                    if (myLocation == null)
+                        distance = hLocation.distanceTo(mLocation) / 1000;
+                    else
+                        distance = myLocation.distanceTo(hLocation) / 1000;
+                    Log.d("Friend" + i, ": " + distance);
+                    addFriend(new Friend(name, msg, lat, lon, Float.parseFloat(df.format(distance))));
                 }
-                hLocation.setLatitude(lat);
-                hLocation.setLongitude(lon);
-                DecimalFormat df = new DecimalFormat("#.##");
-                if (myLocation == null)
-                    distance = hLocation.distanceTo(mLocation) / 1000;
-                else
-                    distance = myLocation.distanceTo(hLocation) / 1000;
-                Log.d("Friend" + i, ": " + distance);
-                addFriend(new Friend(name, msg, lat, lon, Float.parseFloat(df.format(distance))));
             }
             sortFriends();
         }
