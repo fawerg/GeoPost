@@ -64,15 +64,27 @@ public class UpdateStatus extends AppCompatActivity implements com.google.androi
         mapFragment.getMapAsync(this);
     }
 
-    public void updateStatus(View view){
+    public void updateStatus(View view) {
 
-        status = ((TextView)findViewById(R.id.status)).getText().toString();
-        if(locationUpdate != null) {
-            Log.d("UpdateStatus: ", "updateStatus is calling the model");
+        status = ((TextView) findViewById(R.id.status)).getText().toString();
+        Log.d("status", status);
+        if (locationUpdate == null && status.equals("")) {
+            Snackbar.make(findViewById(R.id.status_update_layout), "Missing Status and Location information", Snackbar.LENGTH_SHORT).show();
+        } else if(locationUpdate == null || status.equals("")){
+            if (locationUpdate == null) {
+                Log.d("UpdateStatus: ", "updateStatus is calling the model");
+                Snackbar.make(findViewById(R.id.status_update_layout), "Missing Location information", Snackbar.LENGTH_SHORT).show();
+            }
+            if (status.equals("")) {
+                Snackbar.make(findViewById(R.id.status_update_layout), "Missing Status Text", Snackbar.LENGTH_SHORT).show();
+            }
+        }
+        else{
             requestUpdate();
         }
-        Log.d("UpdateStatus" , "Button update clicked; msg: "+status+" location: "+ locationUpdate);
+        Log.d("UpdateStatus", "Button update clicked; msg: " + status + " location: " + locationUpdate);
     }
+
 
     public void requestUpdate(){
         String url = "https://ewserver.di.unimi.it/mobicomp/geopost/status_update?session_id="+myModel.getSession()+"&message="+status+"&lat="+locationUpdate.getLatitude()+"&lon="+locationUpdate.getLongitude();
@@ -103,9 +115,6 @@ public class UpdateStatus extends AppCompatActivity implements com.google.androi
             mGoogleMap.animateCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(location.getLatitude(), location.getLongitude()), 10));
         }
         Log.d("UpdateStatus: ", "onLocationChanged");
-        if(status!= null){
-            requestUpdate();
-        }
     }
 
     @Override

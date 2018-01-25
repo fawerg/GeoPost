@@ -33,7 +33,7 @@ public class LoginActivity extends AppCompatActivity {
         setContentView(R.layout.activity_login);
     }
 
-    protected void onClickLogin(View view){
+    public void onClickLogin(View view){
         final String username, password;
         username = ((EditText)findViewById(R.id.username)).getText().toString();
         password = ((EditText)findViewById(R.id.password)).getText().toString();
