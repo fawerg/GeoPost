@@ -21,6 +21,8 @@ import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.TextView;
+
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -43,6 +45,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.text.DecimalFormat;
+import java.util.StringTokenizer;
 
 public class FollowedFriends extends AppCompatActivity implements com.google.android.gms.location.LocationListener, GoogleApiClient.ConnectionCallbacks,GoogleApiClient.OnConnectionFailedListener,NavigationView.OnNavigationItemSelectedListener, TabLayout.OnTabSelectedListener , OnMapReadyCallback{
     Model myModel = Model.getInstance();
@@ -301,5 +304,15 @@ public class FollowedFriends extends AppCompatActivity implements com.google.and
         super.onSaveInstanceState(savedInstanceState);
         Log.d("OnSave:", "saving tabs");
         savedInstanceState.putBoolean("map", findViewById(R.id.map).getVisibility()==View.VISIBLE);
+    }
+
+    public void showHistory(View view){
+        String username = ((TextView)view).getText().toString();
+        StringTokenizer st = new StringTokenizer(username, " ");
+        st.nextToken();
+        username = st.nextToken();
+        Intent intent = new Intent(this, History.class);
+        intent.putExtra("user", username);
+        startActivity(intent);
     }
 }

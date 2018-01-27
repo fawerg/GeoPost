@@ -11,6 +11,7 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Created by fawerg on 1/3/18.
@@ -25,6 +26,7 @@ public class Model {
         return ourInstance;
     }
     private Friend profile = null;
+    private ArrayList<HistElement> History = new ArrayList<>();
     private Model() {
     }
 
@@ -134,5 +136,30 @@ public class Model {
         catch (JSONException e){
             e.printStackTrace();
         }
+    }
+
+    public void deserializeHistory(JSONObject response){
+        try {
+            History.clear();
+            JSONArray Jhistory = response.getJSONArray("history");
+            Log.d("JSON", Jhistory.toString());
+            StringTokenizer str;
+            for (int i = 0; i < Jhistory.length(); i++) {
+                String status = Jhistory.getJSONObject(i).getString("value");
+                String tmst = Jhistory.getJSONObject(i).getString("timestamp");
+                Log.d("Status:"+status, "Timestamp:"+tmst);
+                str = new StringTokenizer(tmst, ".");
+
+                History.add(new HistElement(status, str.nextToken()));
+            }
+            Log.d("esameMc. Numero Post", ""+History.size());
+        }
+        catch (JSONException e){
+            e.printStackTrace();
+        }
+    }
+
+    public ArrayList<HistElement> getHistory(){
+        return History;
     }
 }
